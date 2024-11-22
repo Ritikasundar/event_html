@@ -1,0 +1,69 @@
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-table',
+  template: `
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Age</th>
+            <th>City</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="fade-in" *ngFor="let person of people">
+            <td>{{ person.name }}</td>
+            <td>{{ person.age }}</td>
+            <td>{{ person.city }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `,
+  styles: [`
+    .table-container {
+      margin: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    .fade-in {
+      animation: fadeIn 1s ease-in-out;
+      opacity: 0;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+  `]
+})
+export class TableComponent {
+  people = [
+    { name: 'John Doe', age: 28, city: 'New York' },
+    { name: 'Jane Smith', age: 34, city: 'Los Angeles' },
+    { name: 'Michael Johnson', age: 45, city: 'Chicago' }
+  ];
+}

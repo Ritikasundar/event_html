@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Event Management</title>
+        <style>
+            body { font-family: Arial, sans-serif; }
+            .container { max-width: 600px; margin: auto; }
+            input, button { display: block; margin-bottom: 10px; padding: 10px; }
+            .error { color: red; font-size: 12px; }
+            #event-list { margin-top: 20px; }
+            #event-item { border: 1px solid #ddd; padding: 10px; margin-bottom: 10px; }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Event Management</h1>
+        </header>
+        <div class="container">
+            <h2>Add Event</h2>
+            <form id="eventForm" onsubmit="return validateForm()">
+                <label for="name">Event Name:</label>
+                <input type="text" id="name" required>
+                <span id="nameError" class="error"></span>
+
+                <label for="date">Event Date:</label>
+                <input type="date" id="date" required>
+                <span id="dateError" class="error"></span>
+
+                <label for="location">Event Location:</label>
+                <input type="text" id="location" required>
+                <span id="locationError" class="error"></span>
+
+                <label for="description">Event Description:</label>
+                <input type="text" id="description" required>
+                <span id="descriptionError" class="error"></span>
+
+                <button type="button" onclick="submitEvent()">Add Event</button>
+            </form>
+
+            <div id="event-list"></div>
+        </div>
+
+        <script>
+            function validateForm() {
+                let isValid = true;
+
+                // Clear previous error messages
+                document.getElementById('nameError').textContent = '';
+                document.getElementById('dateError').textContent = '';
+                document.getElementById('locationError').textContent = '';
+                document.getElementById('descriptionError').textContent = '';
+
+                // Fetch field values
+                const name = document.getElementById('name').value.trim();
+                const date = document.getElementById('date').value;
+                const location = document.getElementById('location').value.trim();
+                const description = document.getElementById('description').value.trim();
+
+                // Validate name field
+                if (!name) {
+                    document.getElementById('nameError').textContent = 'Event name is required.';
+                    isValid = false;
+                }
+
+                // Validate date field
+                if (!date) {
+                    document.getElementById('dateError').textContent = 'Event date is required.';
+                    isValid = false;
+                } else if (new Date(date) < new Date()) {
+                    document.getElementById('dateError').textContent = 'Event date cannot be in the past.';
+                    isValid = false;
+                }
+
+                // Validate location field
+                if (!location) {
+                    document.getElementById('locationError').textContent = 'Event location is required.';
+                    isValid = false;
+                }
+
+                // Validate description field
+                if (!description) {
+                    document.getElementById('descriptionError').textContent = 'Event description is required.';
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            async function submitEvent() {
+                if (!validateForm()) {
+                    return; // Stop form submission if validation fails
+                }
+
+                const name = document.getElementById('name').value;
+                const date = document.getElementById('date').value;
+                const location = document.getElementById('location').value;
+                const description = document.getElementById('description').value;
+
+                try {
+                    const response = await fetch('/add-event', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ name, date, location, description })
+                    });
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('Event added');
+                        document.getElementById('eventForm').reset(); // Reset form after submission
+                        fetchEvents();
+                    } else {
+                        alert('Failed to add event');
+                    }
+                } catch (err) {
+                    console.log('Error: ' + err);
+                }
+            }
+
+            async function fetchEvents() {
+                try {
+                    const response = await fetch('/get-events');
+                    const result = await response.json();
+                    const eventList = document.getElementById('event-list');
+                    eventList.innerHTML = "";
+
+                    result.forEach(event => {
+                        eventList.innerHTML += `<div id="event-item">
+                            <strong>${event.name}</strong><br>
+                            Date: ${new Date(event.date).toLocaleDateString()}<br>
+                            Location: ${event.location}<br>
+                            Description: ${event.description}
+                            <button class="delete-btn" onclick="deleteEvent('${event._id}')">Delete</button>
+                        </div>`;
+                    });
+                } catch (err) {
+                    console.log('Error: ' + err);
+                }
+            }
+
+            async function deleteEvent(eventId) {
+                try {
+                    const response = await fetch(`/delete-event/${eventId}`, {
+                        method: 'DELETE'
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        alert('Event deleted successfully!');
+                        fetchEvents();  // Refresh event list after deletion
+                    } else {
+                        alert('Failed to delete event. Please try again.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+
+            // Initial load of events
+            fetchEvents();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+        .form-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin: auto;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2>Event Registration Form</h2>
+        <form id="eventForm">
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter your full name">
+            <div id="nameError" class="error"></div>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email">
+            <div id="emailError" class="error"></div>
+
+            <label for="event">Event Type:</label>
+            <select id="event" name="event">
+                <option value="">Select Event</option>
+                <option value="conference">Conference</option>
+                <option value="workshop">Workshop</option>
+                <option value="webinar">Webinar</option>
+            </select>
+            <div id="eventError" class="error"></div>
+
+            <label for="date">Event Date:</label>
+            <input type="date" id="date" name="date">
+            <div id="dateError" class="error"></div>
+
+            <button type="button" class="submit-btn" onclick="validateForm()">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        function validateForm() {
+            // Clear previous error messages
+            document.getElementById("nameError").innerText = "";
+            document.getElementById("emailError").innerText = "";
+            document.getElementById("eventError").innerText = "";
+            document.getElementById("dateError").innerText = "";
+
+            // Get form values
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var event = document.getElementById("event").value;
+            var date = document.getElementById("date").value;
+
+            // Validation flag
+            var valid = true;
+
+            // Validate name
+            if (name === "") {
+                document.getElementById("nameError").innerText = "Name is required.";
+                valid = false;
+            }
+
+            // Validate email
+            if (email === "") {
+                document.getElementById("emailError").innerText = "Email is required.";
+                valid = false;
+            } else if (!validateEmail(email)) {
+                document.getElementById("emailError").innerText = "Invalid email format.";
+                valid = false;
+            }
+
+            // Validate event type
+            if (event === "") {
+                document.getElementById("eventError").innerText = "Please select an event.";
+                valid = false;
+            }
+
+            // Validate event date
+            if (date === "") {
+                document.getElementById("dateError").innerText = "Please select an event date.";
+                valid = false;
+            }
+
+            // If valid, display success message
+            if (valid) {
+                alert("Form submitted successfully!");
+            }
+        }
+
+        // Helper function to validate email format
+        function validateEmail(email) {
+            var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+    </script>
+
+</body>
+</html>
